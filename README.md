@@ -1,1 +1,1 @@
-[# cozyboard](https://cozyboard.vercel.app/)
+https://cozyboard.vercel.app/
