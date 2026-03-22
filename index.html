@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CozyBoard</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg: #f5f0e8;
@@ -20,1094 +17,579 @@
       --accent: #c0392b;
       --accent2: #e74c3c;
       --ink: #1a1208;
-      --shadow: rgba(42, 34, 24, 0.12);
+      --shadow: rgba(42,34,24,0.12);
+      --admin: #1a6e3a;
+      --admin-light: #27ae60;
     }
-
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Noto Sans KR', sans-serif;
-      font-weight: 300;
-      min-height: 100vh;
-      background-image: repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(180, 160, 100, 0.13) 27px, rgba(180, 160, 100, 0.13) 28px);
+      background: var(--bg); color: var(--text);
+      font-family: 'Noto Sans KR', sans-serif; font-weight: 300; min-height: 100vh;
+      background-image: repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(180,160,100,0.13) 27px,rgba(180,160,100,0.13) 28px);
     }
 
     /* ── 헤더 ── */
-    header {
-      background: var(--ink);
-      color: var(--bg);
-      padding: 0 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 60px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 16px var(--shadow);
-    }
+    header { background: var(--ink); color: var(--bg); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px var(--shadow); }
+    .logo { font-family:'Noto Serif KR',serif; font-size:1.4rem; font-weight:700; color:var(--bg); }
+    .logo span { color: var(--accent2); }
+    .logo .admin-crown { font-size:0.9rem; margin-left:0.3rem; }
+    .header-right { display:flex; align-items:center; gap:0.8rem; }
+    .user-info { font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:rgba(245,240,232,0.6); max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .user-info.is-admin { color: #7dffaa; }
+    .btn-hdr { background:none; border:1px solid rgba(245,240,232,0.25); color:rgba(245,240,232,0.8); padding:0.35rem 0.85rem; font-size:0.78rem; font-family:'Noto Sans KR',sans-serif; cursor:pointer; border-radius:2px; transition:border-color 0.2s,color 0.2s; white-space:nowrap; }
+    .btn-hdr:hover { border-color:rgba(245,240,232,0.7); color:#fff; }
+    .btn-hdr.accent { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .btn-hdr.accent:hover { background:var(--accent2); }
 
-    .logo {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--bg);
-    }
-
-    .logo span {
-      color: var(--accent2);
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-    }
-
-    .user-info {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.7rem;
-      color: rgba(245, 240, 232, 0.6);
-      max-width: 160px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .btn-hdr {
-      background: none;
-      border: 1px solid rgba(245, 240, 232, 0.25);
-      color: rgba(245, 240, 232, 0.8);
-      padding: 0.35rem 0.85rem;
-      font-size: 0.78rem;
-      font-family: 'Noto Sans KR', sans-serif;
-      cursor: pointer;
-      border-radius: 2px;
-      transition: border-color 0.2s, color 0.2s;
-      white-space: nowrap;
-    }
-
-    .btn-hdr:hover {
-      border-color: rgba(245, 240, 232, 0.7);
-      color: #fff;
-    }
-
-    .btn-hdr.accent {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-
-    .btn-hdr.accent:hover {
-      background: var(--accent2);
-    }
+    /* ── 관리자 배너 ── */
+    .admin-banner { background: var(--admin); color: #d4ffdf; padding: 0.5rem 1.5rem; font-family:'IBM Plex Mono',monospace; font-size:0.75rem; display:none; align-items:center; gap:0.6rem; }
+    .admin-banner.show { display:flex; }
+    .admin-banner-dot { width:7px; height:7px; background:#7dffaa; border-radius:50%; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
     /* ── 컨테이너 ── */
-    .container {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem;
-    }
+    .container { max-width:860px; margin:0 auto; padding:2.5rem 1.5rem; }
 
-    /* ── 공통 입력 ── */
-    input,
-    textarea {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      padding: 0.65rem 0.85rem;
-      font-family: 'Noto Sans KR', sans-serif;
-      font-size: 0.88rem;
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-      color: var(--border-dark);
-    }
-
-    input:focus,
-    textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 100px;
-      line-height: 1.7;
-    }
+    /* ── 입력 ── */
+    input, textarea { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:2px; padding:0.65rem 0.85rem; font-family:'Noto Sans KR',sans-serif; font-size:0.88rem; color:var(--text); outline:none; transition:border-color 0.2s,box-shadow 0.2s; }
+    input::placeholder, textarea::placeholder { color:var(--border-dark); }
+    input:focus, textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(192,57,43,0.1); }
+    textarea { resize:vertical; min-height:100px; line-height:1.7; }
 
     /* ── 오버레이 ── */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(26, 18, 8, 0.65);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 200;
-      padding: 1rem;
-      backdrop-filter: blur(2px);
-      animation: fadeIn 0.2s ease both;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0
-      }
-
-      to {
-        opacity: 1
-      }
-    }
-
-    @keyframes modalUp {
-      from {
-        opacity: 0;
-        transform: translateY(16px)
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0)
-      }
-    }
+    .overlay { position:fixed; inset:0; background:rgba(26,18,8,0.65); display:flex; align-items:center; justify-content:center; z-index:200; padding:1rem; backdrop-filter:blur(2px); animation:fadeIn 0.2s ease both; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    @keyframes modalUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
     /* ── 인증 박스 ── */
-    .auth-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-top: 3px solid var(--accent);
-      border-radius: 2px;
-      width: 100%;
-      max-width: 400px;
-      padding: 2rem;
-      box-shadow: 0 20px 60px rgba(26, 18, 8, 0.4);
-      animation: modalUp 0.25s ease both;
-      position: relative;
-    }
-
-    .auth-box h2 {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--ink);
-      margin-bottom: 1.4rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .auth-box h2::before {
-      content: '';
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      background: var(--accent);
-      border-radius: 50%;
-    }
-
-    .auth-close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      cursor: pointer;
-      line-height: 1;
-      padding: 0.2rem;
-    }
-
-    .auth-close:hover {
-      color: var(--text);
-    }
-
-    .auth-field {
-      margin-bottom: 0.8rem;
-    }
-
-    .auth-field label {
-      display: block;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-bottom: 0.3rem;
-      font-family: 'IBM Plex Mono', monospace;
-    }
-
-    .auth-error {
-      background: #fdf0ef;
-      border: 1px solid #f5c6c2;
-      border-radius: 2px;
-      padding: 0.6rem 0.8rem;
-      font-size: 0.8rem;
-      color: var(--accent);
-      margin-bottom: 0.8rem;
-      display: none;
-    }
-
-    .auth-submit {
-      width: 100%;
-      margin-top: 1rem;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 0.75rem;
-      font-family: 'Noto Sans KR', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      border-radius: 2px;
-      transition: background 0.2s;
-    }
-
-    .auth-submit:hover {
-      background: var(--accent2);
-    }
-
-    .auth-submit:disabled {
-      background: var(--border-dark);
-      cursor: not-allowed;
-    }
-
-    .auth-switch {
-      text-align: center;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 1rem;
-    }
-
-    .auth-switch button {
-      background: none;
-      border: none;
-      color: var(--accent);
-      cursor: pointer;
-      font-size: 0.8rem;
-      text-decoration: underline;
-      font-family: 'Noto Sans KR', sans-serif;
-    }
+    .auth-box { background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--accent); border-radius:2px; width:100%; max-width:400px; padding:2rem; box-shadow:0 20px 60px rgba(26,18,8,0.4); animation:modalUp 0.25s ease both; position:relative; }
+    .auth-box h2 { font-family:'Noto Serif KR',serif; font-size:1.2rem; font-weight:700; color:var(--ink); margin-bottom:1.4rem; display:flex; align-items:center; gap:0.5rem; }
+    .auth-box h2::before { content:''; display:inline-block; width:8px; height:8px; background:var(--accent); border-radius:50%; }
+    .auth-close { position:absolute; top:1rem; right:1rem; background:none; border:none; color:var(--text-muted); font-size:1.1rem; cursor:pointer; }
+    .auth-close:hover { color:var(--text); }
+    .auth-field { margin-bottom:0.8rem; }
+    .auth-field label { display:block; font-size:0.78rem; color:var(--text-muted); margin-bottom:0.3rem; font-family:'IBM Plex Mono',monospace; }
+    .auth-error { background:#fdf0ef; border:1px solid #f5c6c2; border-radius:2px; padding:0.6rem 0.8rem; font-size:0.8rem; color:var(--accent); margin-bottom:0.8rem; display:none; }
+    .auth-submit { width:100%; margin-top:1rem; background:var(--accent); color:#fff; border:none; padding:0.75rem; font-family:'Noto Sans KR',sans-serif; font-size:0.9rem; font-weight:500; cursor:pointer; border-radius:2px; transition:background 0.2s; }
+    .auth-submit:hover { background:var(--accent2); }
+    .auth-submit:disabled { background:var(--border-dark); cursor:not-allowed; }
+    .auth-switch { text-align:center; font-size:0.8rem; color:var(--text-muted); margin-top:1rem; }
+    .auth-switch button { background:none; border:none; color:var(--accent); cursor:pointer; font-size:0.8rem; text-decoration:underline; font-family:'Noto Sans KR',sans-serif; }
 
     /* ── 글쓰기 박스 ── */
-    .write-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-top: 3px solid var(--accent);
-      border-radius: 2px;
-      padding: 1.5rem;
-      margin-bottom: 2.5rem;
-      box-shadow: 0 2px 12px var(--shadow);
-      animation: slideDown 0.4s ease both;
-    }
+    .write-box { background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--accent); border-radius:2px; padding:1.5rem; margin-bottom:2.5rem; box-shadow:0 2px 12px var(--shadow); animation:slideDown 0.4s ease both; }
+    @keyframes slideDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+    .write-box h2 { font-family:'Noto Serif KR',serif; font-size:1rem; font-weight:600; color:var(--text-muted); margin-bottom:1.1rem; display:flex; align-items:center; gap:0.5rem; }
+    .write-box h2::before { content:''; display:inline-block; width:8px; height:8px; background:var(--accent); border-radius:50%; }
+    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:0.7rem; margin-bottom:0.7rem; }
+    @media(max-width:520px){ .row2{grid-template-columns:1fr;} }
+    .field-row { margin-bottom:0.7rem; }
+    .field-label { font-size:0.75rem; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; margin-bottom:0.3rem; display:block; }
+    .write-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; margin-top:0.8rem; }
+    .write-hint { font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--text-muted); }
+    .btn-submit { background:var(--accent); color:#fff; border:none; padding:0.7rem 1.8rem; font-family:'Noto Sans KR',sans-serif; font-size:0.88rem; font-weight:500; cursor:pointer; border-radius:2px; transition:background 0.2s,transform 0.1s; display:flex; align-items:center; gap:0.4rem; }
+    .btn-submit:hover { background:var(--accent2); }
+    .btn-submit:active { transform:scale(0.97); }
+    .btn-submit:disabled { background:var(--border-dark); cursor:not-allowed; }
 
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-12px)
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0)
-      }
-    }
-
-    .write-box h2 {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .write-box h2::before {
-      content: '';
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      background: var(--accent);
-      border-radius: 50%;
-    }
-
-    .row2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.7rem;
-      margin-bottom: 0.7rem;
-    }
-
-    @media(max-width:520px) {
-      .row2 {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .field-row {
-      margin-bottom: 0.7rem;
-    }
-
-    .write-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 0.2rem;
-    }
-
-    .write-hint {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
-
-    .btn-submit {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 0.7rem 1.8rem;
-      font-family: 'Noto Sans KR', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 500;
-      cursor: pointer;
-      border-radius: 2px;
-      transition: background 0.2s, transform 0.1s;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .btn-submit:hover {
-      background: var(--accent2);
-    }
-
-    .btn-submit:active {
-      transform: scale(0.97);
-    }
-
-    .btn-submit:disabled {
-      background: var(--border-dark);
-      cursor: not-allowed;
-    }
+    /* ── 이미지 ── */
+    .img-preview-strip { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem; }
+    .img-thumb { position:relative; width:72px; height:72px; border-radius:2px; overflow:hidden; border:1px solid var(--border); flex-shrink:0; }
+    .img-thumb img { width:100%; height:100%; object-fit:cover; }
+    .img-thumb-del { position:absolute; top:2px; right:2px; background:rgba(26,18,8,0.7); color:#fff; border:none; border-radius:50%; width:18px; height:18px; font-size:0.65rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .img-add-btn { width:72px; height:72px; border:1px dashed var(--border-dark); border-radius:2px; background:var(--bg); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.2rem; color:var(--border-dark); font-size:0.65rem; font-family:'IBM Plex Mono',monospace; transition:border-color 0.2s,color 0.2s; flex-shrink:0; }
+    .img-add-btn:hover { border-color:var(--accent); color:var(--accent); }
+    .img-url-popup { display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; background:var(--surface); border:1px solid var(--border); border-radius:2px; padding:0.7rem; box-shadow:0 4px 16px var(--shadow); z-index:50; }
+    .img-url-popup.open { display:block; }
+    .img-input-wrap { position:relative; }
+    .img-url-row { display:flex; gap:0.5rem; }
+    .img-url-row input { flex:1; font-size:0.82rem; padding:0.5rem 0.7rem; }
+    .img-url-ok { background:var(--accent); color:#fff; border:none; padding:0.5rem 0.9rem; border-radius:2px; font-size:0.82rem; cursor:pointer; white-space:nowrap; font-family:'Noto Sans KR',sans-serif; }
+    .img-url-ok:hover { background:var(--accent2); }
+    .img-url-hint { font-size:0.72rem; color:var(--text-muted); margin-top:0.4rem; font-family:'IBM Plex Mono',monospace; }
 
     /* ── 목록 ── */
-    .list-header {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 0.9rem;
-    }
+    .list-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:0.9rem; }
+    .list-title { font-family:'Noto Serif KR',serif; font-size:1.1rem; font-weight:700; color:var(--ink); }
+    .post-count { font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--text-muted); }
+    .post-list { display:flex; flex-direction:column; }
+    .post-card { background:var(--surface); border:1px solid var(--border); border-bottom:none; padding:1rem 1.2rem; cursor:pointer; display:grid; grid-template-columns:1fr auto; gap:0.3rem 1rem; align-items:center; transition:background 0.15s; position:relative; }
+    .post-card:first-child { border-radius:2px 2px 0 0; }
+    .post-card:last-child { border-bottom:1px solid var(--border); border-radius:0 0 2px 2px; }
+    .post-card:only-child { border-radius:2px; border-bottom:1px solid var(--border); }
+    .post-card:hover { background:var(--surface2); }
+    .post-card-thumb { width:44px; height:44px; object-fit:cover; border-radius:2px; border:1px solid var(--border); grid-column:2; grid-row:1/3; flex-shrink:0; }
+    .post-title-text { font-size:0.93rem; font-weight:500; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .post-meta-row { font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--text-muted); display:flex; gap:0.6rem; align-items:center; }
+    .post-date { font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--border-dark); white-space:nowrap; }
+    .badge { font-size:0.62rem; border-radius:2px; padding:0.1em 0.45em; border:1px solid; }
+    .badge-anon { background:var(--surface2); border-color:var(--border); color:var(--border-dark); }
+    .badge-member { background:#eef6ee; border-color:#b2d8b2; color:#2d6e2d; }
+    .badge-img { background:#eef3ff; border-color:#b2c4f0; color:#2d4ea0; }
 
-    .list-title {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--ink);
-    }
-
-    .post-count {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
-    .post-list {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .post-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-bottom: none;
-      padding: 1rem 1.2rem;
-      cursor: pointer;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 0.3rem 1rem;
-      align-items: center;
-      transition: background 0.15s;
-    }
-
-    .post-card:first-child {
-      border-radius: 2px 2px 0 0;
-    }
-
-    .post-card:last-child {
-      border-bottom: 1px solid var(--border);
-      border-radius: 0 0 2px 2px;
-    }
-
-    .post-card:only-child {
-      border-radius: 2px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .post-card:hover {
-      background: var(--surface2);
-    }
-
-    .post-title-text {
-      font-size: 0.93rem;
-      font-weight: 500;
-      color: var(--ink);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .post-meta-row {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      display: flex;
-      gap: 0.6rem;
-      align-items: center;
-    }
-
-    .post-date {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.68rem;
-      color: var(--border-dark);
-      grid-column: 2;
-      grid-row: 1/3;
-      white-space: nowrap;
-      align-self: center;
-    }
-
-    .badge {
-      font-size: 0.62rem;
-      border-radius: 2px;
-      padding: 0.1em 0.45em;
-      border: 1px solid;
-    }
-
-    .badge-anon {
-      background: var(--surface2);
-      border-color: var(--border);
-      color: var(--border-dark);
-    }
-
-    .badge-member {
-      background: #eef6ee;
-      border-color: #b2d8b2;
-      color: #2d6e2d;
-    }
+    /* ── 관리자 삭제 버튼 (카드 위) ── */
+    .admin-del-btn { position:absolute; top:50%; right:1rem; transform:translateY(-50%); background:var(--admin); color:#d4ffdf; border:none; padding:0.3rem 0.7rem; font-size:0.72rem; font-family:'Noto Sans KR',sans-serif; cursor:pointer; border-radius:2px; opacity:0; transition:opacity 0.15s; z-index:10; white-space:nowrap; }
+    .post-card:hover .admin-del-btn { opacity:1; }
 
     /* ── 빈 상태 / 로딩 ── */
-    .empty {
-      text-align: center;
-      padding: 4rem 1rem;
-      color: var(--text-muted);
-      border: 1px dashed var(--border);
-      border-radius: 2px;
-      background: var(--surface);
-    }
-
-    .empty .icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .empty p {
-      font-size: 0.9rem;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 3rem;
-      color: var(--text-muted);
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.8rem;
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin-bottom: 0.7rem;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg)
-      }
-    }
+    .empty { text-align:center; padding:4rem 1rem; color:var(--text-muted); border:1px dashed var(--border); border-radius:2px; background:var(--surface); }
+    .empty .icon { font-size:2rem; margin-bottom:0.5rem; }
+    .loading { text-align:center; padding:3rem; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; font-size:0.8rem; }
+    .spinner { display:inline-block; width:20px; height:20px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; margin-bottom:0.7rem; }
+    @keyframes spin { to{transform:rotate(360deg)} }
 
     /* ── 게시글 모달 ── */
-    .post-modal {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-top: 3px solid var(--accent);
-      border-radius: 2px;
-      max-width: 620px;
-      width: 100%;
-      max-height: 82vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(26, 18, 8, 0.4);
-      animation: modalUp 0.25s ease both;
-    }
+    .post-modal { background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--accent); border-radius:2px; max-width:640px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 20px 60px rgba(26,18,8,0.4); animation:modalUp 0.25s ease both; }
+    .modal-header { padding:1.2rem 1.4rem 0.8rem; border-bottom:1px solid var(--border); }
+    .modal-title { font-family:'Noto Serif KR',serif; font-size:1.2rem; font-weight:700; color:var(--ink); line-height:1.4; margin-bottom:0.5rem; }
+    .modal-meta { font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--text-muted); display:flex; gap:0.8rem; align-items:center; flex-wrap:wrap; }
+    .modal-body { padding:1.2rem 1.4rem; font-size:0.9rem; line-height:1.9; color:var(--text); white-space:pre-wrap; min-height:60px; }
+    .modal-gallery { padding:0 1.4rem 1.2rem; display:flex; flex-wrap:wrap; gap:0.6rem; }
+    .modal-gallery img { max-width:100%; max-height:320px; object-fit:contain; border-radius:2px; border:1px solid var(--border); cursor:pointer; transition:opacity 0.2s; }
+    .modal-gallery img:hover { opacity:0.88; }
+    .modal-gallery.single img { max-height:420px; width:100%; }
+    .modal-footer { padding:0.8rem 1.4rem; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:0.7rem; flex-wrap:wrap; }
 
-    .modal-header {
-      padding: 1.2rem 1.4rem 0.8rem;
-      border-bottom: 1px solid var(--border);
-    }
+    /* ── 관리자 모달 삭제 버튼 ── */
+    .btn-admin-del { background:var(--admin); color:#d4ffdf; border:none; padding:0.5rem 1.2rem; font-family:'Noto Sans KR',sans-serif; font-size:0.82rem; cursor:pointer; border-radius:2px; transition:background 0.2s; }
+    .btn-admin-del:hover { background:var(--admin-light); }
 
-    .modal-title {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--ink);
-      line-height: 1.4;
-      margin-bottom: 0.5rem;
-    }
+    .btn-close { background:none; border:1px solid var(--border); padding:0.5rem 1.2rem; font-family:'Noto Sans KR',sans-serif; font-size:0.82rem; cursor:pointer; border-radius:2px; color:var(--text-muted); transition:border-color 0.2s,color 0.2s; }
+    .btn-close:hover { border-color:var(--text-muted); color:var(--text); }
+    .btn-del { background:none; border:1px solid var(--accent); color:var(--accent); padding:0.5rem 1.2rem; font-family:'Noto Sans KR',sans-serif; font-size:0.82rem; cursor:pointer; border-radius:2px; transition:background 0.2s,color 0.2s; }
+    .btn-del:hover { background:var(--accent); color:#fff; }
+    .del-confirm { display:flex; align-items:center; gap:0.5rem; }
+    .del-confirm input { width:140px; padding:0.45rem 0.7rem; font-size:0.82rem; }
+    .btn-confirm { background:var(--accent); color:#fff; border:none; padding:0.47rem 0.9rem; font-size:0.82rem; font-family:'Noto Sans KR',sans-serif; cursor:pointer; border-radius:2px; white-space:nowrap; }
+    .btn-confirm:hover { background:var(--accent2); }
 
-    .modal-meta {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      display: flex;
-      gap: 0.8rem;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .modal-body {
-      padding: 1.2rem 1.4rem;
-      font-size: 0.9rem;
-      line-height: 1.9;
-      color: var(--text);
-      white-space: pre-wrap;
-      min-height: 80px;
-    }
-
-    .modal-footer {
-      padding: 0.8rem 1.4rem;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.7rem;
-      flex-wrap: wrap;
-    }
-
-    .btn-close {
-      background: none;
-      border: 1px solid var(--border);
-      padding: 0.5rem 1.2rem;
-      font-family: 'Noto Sans KR', sans-serif;
-      font-size: 0.82rem;
-      cursor: pointer;
-      border-radius: 2px;
-      color: var(--text-muted);
-      transition: border-color 0.2s, color 0.2s;
-    }
-
-    .btn-close:hover {
-      border-color: var(--text-muted);
-      color: var(--text);
-    }
-
-    .btn-del {
-      background: none;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      padding: 0.5rem 1.2rem;
-      font-family: 'Noto Sans KR', sans-serif;
-      font-size: 0.82rem;
-      cursor: pointer;
-      border-radius: 2px;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .btn-del:hover {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .del-confirm {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .del-confirm input {
-      width: 140px;
-      padding: 0.45rem 0.7rem;
-      font-size: 0.82rem;
-    }
-
-    .btn-confirm {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 0.47rem 0.9rem;
-      font-size: 0.82rem;
-      font-family: 'Noto Sans KR', sans-serif;
-      cursor: pointer;
-      border-radius: 2px;
-      white-space: nowrap;
-    }
-
-    .btn-confirm:hover {
-      background: var(--accent2);
-    }
+    /* ── 라이트박스 ── */
+    .lightbox { position:fixed; inset:0; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:500; cursor:zoom-out; }
+    .lightbox img { max-width:92vw; max-height:92vh; object-fit:contain; border-radius:2px; }
 
     /* ── 토스트 ── */
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--ink);
-      color: var(--bg);
-      padding: 0.7rem 1.4rem;
-      border-radius: 2px;
-      font-size: 0.83rem;
-      font-family: 'IBM Plex Mono', monospace;
-      opacity: 0;
-      transition: opacity 0.2s, transform 0.2s;
-      z-index: 400;
-      white-space: nowrap;
-      pointer-events: none;
-    }
+    .toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:var(--bg); padding:0.7rem 1.4rem; border-radius:2px; font-size:0.83rem; font-family:'IBM Plex Mono',monospace; opacity:0; transition:opacity 0.2s,transform 0.2s; z-index:400; white-space:nowrap; pointer-events:none; }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    footer {
-      text-align: center;
-      padding: 2.5rem 1rem;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.68rem;
-      color: var(--border-dark);
-      margin-top: 3rem;
-    }
+    footer { text-align:center; padding:2.5rem 1rem; font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--border-dark); margin-top:3rem; }
   </style>
 </head>
-
 <body>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import {
-      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-      signOut, onAuthStateChanged, updateProfile
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getDatabase, ref, push, get, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, push, get, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    /* ── Firebase 설정 ── */
-    const firebaseConfig = {
-      apiKey: "AIzaSyCKKqKYjNnJy0JsJ-kPZjk_P7Fupjeapfg",
-      authDomain: "cozyboard-70215.firebaseapp.com",
-      databaseURL: "https://cozyboard-70215-default-rtdb.firebaseio.com",
-      projectId: "cozyboard-70215",
-      storageBucket: "cozyboard-70215.firebasestorage.app",
-      messagingSenderId: "344838094848",
-      appId: "1:344838094848:web:1a4c3dac11db716e1898e5"
-    };
+const firebaseConfig = {
+  apiKey: "AIzaSyCKKqKYjNnJy0JsJ-kPZjk_P7Fupjeapfg",
+  authDomain: "cozyboard-70215.firebaseapp.com",
+  databaseURL: "https://cozyboard-70215-default-rtdb.firebaseio.com",
+  projectId: "cozyboard-70215",
+  storageBucket: "cozyboard-70215.firebasestorage.app",
+  messagingSenderId: "344838094848",
+  appId: "1:344838094848:web:1a4c3dac11db716e1898e5"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
+/* ══ 관리자 이메일 설정 ══ */
+const ADMIN_EMAIL = "altrofast11x2@email.com";
 
-    /* ── 상태 ── */
-    let currentUser = null;
-    let currentPost = null;
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getDatabase(app);
 
-    /* ── DOM 헬퍼 ── */
-    const $ = id => document.getElementById(id);
+let currentUser = null;
+let currentPost = null;
+let pendingImages = [];
 
-    /* ── 유틸 ── */
-    async function sha256(str) {
-      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+const $ = id => document.getElementById(id);
+const isAdmin = () => currentUser?.email === ADMIN_EMAIL;
+
+/* ── 유틸 ── */
+async function sha256(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function fmtDate(iso) {
+  const d = new Date(iso), p = n => String(n).padStart(2,"0");
+  return `${d.getFullYear()}.${p(d.getMonth()+1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+let _tt;
+function showToast(msg) {
+  const el = $("toast"); el.textContent = msg; el.classList.add("show");
+  clearTimeout(_tt); _tt = setTimeout(() => el.classList.remove("show"), 2400);
+}
+function isValidUrl(url) { try { new URL(url); return true; } catch { return false; } }
+
+/* ══ 인증 상태 ══ */
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  const admin = isAdmin();
+
+  // 헤더
+  if (user) {
+    $("userInfo").textContent  = (admin ? "👑 " : "") + (user.displayName || user.email);
+    $("userInfo").className    = "user-info" + (admin ? " is-admin" : "");
+    $("btnOpenLogin").style.display = "none";
+    $("btnOpenReg").style.display   = "none";
+    $("btnLogout").style.display    = "inline-block";
+  } else {
+    $("userInfo").textContent  = "";
+    $("userInfo").className    = "user-info";
+    $("btnOpenLogin").style.display = "inline-block";
+    $("btnOpenReg").style.display   = "inline-block";
+    $("btnLogout").style.display    = "none";
+  }
+
+  // 관리자 배너
+  if (admin) {
+    $("adminBanner").classList.add("show");
+    $("logoCrown").style.display = "inline";
+  } else {
+    $("adminBanner").classList.remove("show");
+    $("logoCrown").style.display = "none";
+  }
+
+  // 글쓰기 폼
+  if (user) {
+    $("anonFields").style.display = "none";
+    $("writeHint").textContent = admin
+      ? `👑 관리자(${user.email}) 로 작성됩니다`
+      : `✍️ ${user.displayName || user.email} 으로 작성됩니다`;
+  } else {
+    $("anonFields").style.display = "";
+    $("writeHint").textContent = "로그인하거나 익명으로 작성하세요";
+  }
+
+  // 목록 새로고침 (관리자 버튼 노출 위해)
+  loadPosts();
+});
+
+/* ══ 인증 모달 ══ */
+let authMode = "login";
+function openAuth(mode) {
+  authMode = mode;
+  $("authError").style.display = "none";
+  $("authEmail").value = $("authPw").value = $("authNick").value = "";
+  const isLogin = mode === "login";
+  $("authTitle").textContent     = isLogin ? "로그인" : "회원가입";
+  $("authNickRow").style.display = isLogin ? "none" : "";
+  $("authSubmit").textContent    = isLogin ? "로그인" : "가입하기";
+  $("authSwitchTxt").textContent = isLogin ? "계정이 없으신가요?" : "이미 계정이 있으신가요?";
+  $("authSwitchBtn").textContent = isLogin ? "회원가입하기" : "로그인하기";
+  $("authOverlay").style.display = "flex";
+  setTimeout(() => (isLogin ? $("authEmail") : $("authNick")).focus(), 50);
+}
+$("btnOpenLogin").addEventListener("click", () => openAuth("login"));
+$("btnOpenReg").addEventListener("click",   () => openAuth("register"));
+$("authClose").addEventListener("click",    () => { $("authOverlay").style.display = "none"; });
+$("authOverlay").addEventListener("click",  e => { if(e.target===$("authOverlay")) $("authOverlay").style.display="none"; });
+$("authSwitchBtn").addEventListener("click",() => openAuth(authMode==="login"?"register":"login"));
+["authNick","authEmail","authPw"].forEach(id => { $(id).addEventListener("keydown", e => { if(e.key==="Enter") $("authSubmit").click(); }); });
+
+$("authSubmit").addEventListener("click", async () => {
+  const email=trim("authEmail"), pw=trim("authPw"), nick=trim("authNick");
+  $("authError").style.display = "none";
+  if (!email||!pw) { showAuthErr("이메일과 비밀번호를 입력해주세요."); return; }
+  if (authMode==="register"&&!nick) { showAuthErr("닉네임을 입력해주세요."); return; }
+  if (authMode==="register"&&pw.length<6) { showAuthErr("비밀번호는 6자 이상이어야 해요."); return; }
+  const btn=$("authSubmit"); btn.disabled=true; btn.textContent="처리 중...";
+  try {
+    if (authMode==="register") {
+      const cred = await createUserWithEmailAndPassword(auth,email,pw);
+      await updateProfile(cred.user,{displayName:nick});
+      showToast(`✅ 환영합니다, ${nick}님!`);
+    } else {
+      await signInWithEmailAndPassword(auth,email,pw);
+      showToast("✅ 로그인 되었습니다");
     }
-    function fmtDate(iso) {
-      const d = new Date(iso), p = n => String(n).padStart(2, "0");
-      return `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    $("authOverlay").style.display="none";
+  } catch(e) { showAuthErr(errMsg(e.code)); }
+  finally { btn.disabled=false; btn.textContent=authMode==="login"?"로그인":"가입하기"; }
+});
+
+function trim(id) { return $(id).value.trim(); }
+function showAuthErr(msg) { $("authError").textContent=msg; $("authError").style.display="block"; }
+function errMsg(code) {
+  return ({"auth/email-already-in-use":"이미 사용 중인 이메일이에요.","auth/invalid-email":"이메일 형식이 올바르지 않아요.","auth/weak-password":"비밀번호는 6자 이상이어야 해요.","auth/user-not-found":"존재하지 않는 계정이에요.","auth/wrong-password":"비밀번호가 틀렸어요.","auth/invalid-credential":"이메일 또는 비밀번호가 올바르지 않아요.","auth/too-many-requests":"잠시 후 다시 시도해주세요."})[code]||"오류가 발생했어요.";
+}
+$("btnLogout").addEventListener("click", async () => { await signOut(auth); showToast("로그아웃 되었습니다"); });
+
+/* ══ 이미지 URL ══ */
+function renderImageStrip() {
+  const strip = $("imgPreviewStrip"); strip.innerHTML = "";
+  pendingImages.forEach((url,i) => {
+    const thumb = document.createElement("div"); thumb.className="img-thumb";
+    thumb.innerHTML=`<img src="${url}" alt="이미지" onerror="this.parentElement.style.display='none'"/><button class="img-thumb-del" data-i="${i}">✕</button>`;
+    strip.appendChild(thumb);
+  });
+  if (pendingImages.length < 4) {
+    const addBtn = document.createElement("button"); addBtn.type="button"; addBtn.className="img-add-btn";
+    addBtn.innerHTML=`<span style="font-size:1.2rem">🖼️</span><span>URL 추가</span>`;
+    addBtn.addEventListener("click", () => { const p=$("imgUrlPopup"); p.classList.toggle("open"); if(p.classList.contains("open")) $("imgUrlInput").focus(); });
+    strip.appendChild(addBtn);
+  }
+  strip.querySelectorAll(".img-thumb-del").forEach(btn => {
+    btn.addEventListener("click", e => { e.stopPropagation(); pendingImages.splice(Number(btn.dataset.i),1); renderImageStrip(); });
+  });
+}
+$("imgUrlOk").addEventListener("click", () => {
+  const url=$("imgUrlInput").value.trim();
+  if (!url) return;
+  if (!isValidUrl(url)) { showToast("올바른 URL을 입력해주세요"); return; }
+  if (pendingImages.includes(url)) { showToast("이미 추가된 이미지예요"); return; }
+  pendingImages.push(url); $("imgUrlInput").value=""; $("imgUrlPopup").classList.remove("open"); renderImageStrip();
+});
+$("imgUrlInput").addEventListener("keydown", e => { if(e.key==="Enter") $("imgUrlOk").click(); });
+document.addEventListener("click", e => {
+  const p=$("imgUrlPopup");
+  if(p.classList.contains("open")&&!p.contains(e.target)&&!e.target.closest(".img-add-btn")) p.classList.remove("open");
+});
+renderImageStrip();
+
+/* ══ 글 작성 ══ */
+$("btnSubmit").addEventListener("click", async () => {
+  const title=trim("formTitle"), content=trim("formContent");
+  if (!title)   { showToast("제목을 입력해주세요"); $("formTitle").focus(); return; }
+  if (!content) { showToast("내용을 입력해주세요"); $("formContent").focus(); return; }
+  let nickname, pwHash, uid;
+  if (currentUser) {
+    nickname=currentUser.displayName||currentUser.email; pwHash=null; uid=currentUser.uid;
+  } else {
+    const nick=trim("formNick"), pw=trim("formPw");
+    if (!nick) { showToast("닉네임을 입력해주세요"); $("formNick").focus(); return; }
+    if (!pw)   { showToast("삭제용 비밀번호를 입력해주세요"); $("formPw").focus(); return; }
+    nickname=nick; pwHash=await sha256(pw); uid=null;
+  }
+  const btn=$("btnSubmit"); btn.disabled=true; btn.textContent="등록 중...";
+  try {
+    await push(ref(db,"posts"),{ nickname,title,content,pwHash,uid, images:pendingImages.length>0?[...pendingImages]:null, createdAt:new Date().toISOString() });
+    $("formNick").value=$("formPw").value=$("formTitle").value=$("formContent").value="";
+    pendingImages=[]; renderImageStrip();
+    showToast("✅ 게시글이 등록되었습니다"); await loadPosts();
+  } catch(e) { showToast("❌ 등록 실패: "+e.message); }
+  finally { btn.disabled=false; btn.textContent="✏️ 게시글 올리기"; }
+});
+$("formContent").addEventListener("keydown", e => { if(e.ctrlKey&&e.key==="Enter") $("btnSubmit").click(); });
+
+/* ══ 목록 ══ */
+async function loadPosts() {
+  $("postList").innerHTML=`<div class="loading"><div class="spinner"></div><br/>불러오는 중...</div>`;
+  try {
+    const snap=await get(ref(db,"posts")), data=snap.val();
+    if (!data) {
+      $("postList").innerHTML=`<div class="empty"><div class="icon">📭</div><p>아직 게시글이 없어요. 첫 글을 남겨보세요!</p></div>`;
+      $("postCount").textContent="0 posts"; return;
     }
-    let _tt;
-    function toast(msg) {
-      const el = $("toast");
-      el.textContent = msg;
-      el.classList.add("show");
-      clearTimeout(_tt);
-      _tt = setTimeout(() => el.classList.remove("show"), 2400);
-    }
+    const posts=Object.entries(data).map(([key,val])=>({key,...val})).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+    $("postCount").textContent=`${posts.length} posts`;
+    $("postList").innerHTML="";
+    posts.forEach(post => {
+      const card=document.createElement("div"); card.className="post-card";
+      const badgeHtml=post.uid?`<span class="badge badge-member">회원</span>`:`<span class="badge badge-anon">익명</span>`;
+      const imgBadge=post.images?.length?`<span class="badge badge-img">🖼️ ${post.images.length}</span>`:"";
+      const thumbHtml=post.images?.length?`<img class="post-card-thumb" src="${post.images[0]}" alt="썸네일" onerror="this.style.display='none'"/>`:`<div style="grid-column:2;grid-row:1/3;width:44px"></div>`;
 
-    /* ══════════ 인증 상태 감지 ══════════ */
-    onAuthStateChanged(auth, user => {
-      currentUser = user;
-      // 헤더 업데이트
-      if (user) {
-        $("userInfo").textContent = user.displayName || user.email;
-        $("btnOpenLogin").style.display = "none";
-        $("btnOpenReg").style.display = "none";
-        $("btnLogout").style.display = "inline-block";
-      } else {
-        $("userInfo").textContent = "";
-        $("btnOpenLogin").style.display = "inline-block";
-        $("btnOpenReg").style.display = "inline-block";
-        $("btnLogout").style.display = "none";
-      }
-      // 글쓰기 폼 업데이트
-      if (user) {
-        $("anonFields").style.display = "none";
-        $("writeHint").textContent = `✍️ ${user.displayName || user.email} 으로 작성됩니다`;
-      } else {
-        $("anonFields").style.display = "";
-        $("writeHint").textContent = "로그인하거나 익명으로 작성하세요";
-      }
-    });
-
-    /* ══════════ 인증 모달 ══════════ */
-    let authMode = "login";
-
-    function openAuth(mode) {
-      authMode = mode;
-      $("authError").style.display = "none";
-      $("authEmail").value = $("authPw").value = $("authNick").value = "";
-      if (mode === "login") {
-        $("authTitle").textContent = "로그인";
-        $("authNickRow").style.display = "none";
-        $("authSubmit").textContent = "로그인";
-        $("authSwitchTxt").textContent = "계정이 없으신가요?";
-        $("authSwitchBtn").textContent = "회원가입하기";
-      } else {
-        $("authTitle").textContent = "회원가입";
-        $("authNickRow").style.display = "";
-        $("authSubmit").textContent = "가입하기";
-        $("authSwitchTxt").textContent = "이미 계정이 있으신가요?";
-        $("authSwitchBtn").textContent = "로그인하기";
-      }
-      $("authOverlay").style.display = "flex";
-      setTimeout(() => (authMode === "register" ? $("authNick") : $("authEmail")).focus(), 50);
-    }
-
-    $("btnOpenLogin").addEventListener("click", () => openAuth("login"));
-    $("btnOpenReg").addEventListener("click", () => openAuth("register"));
-    $("authClose").addEventListener("click", () => { $("authOverlay").style.display = "none"; });
-    $("authOverlay").addEventListener("click", e => { if (e.target === $("authOverlay")) $("authOverlay").style.display = "none"; });
-    $("authSwitchBtn").addEventListener("click", () => openAuth(authMode === "login" ? "register" : "login"));
-
-    // 엔터키
-    ["authNick", "authEmail", "authPw"].forEach(id => {
-      $(id).addEventListener("keydown", e => { if (e.key === "Enter") $("authSubmit").click(); });
-    });
-
-    $("authSubmit").addEventListener("click", async () => {
-      const email = $("authEmail").value.trim();
-      const pw = $("authPw").value.trim();
-      const nick = $("authNick").value.trim();
-      $("authError").style.display = "none";
-
-      if (!email || !pw) { showAuthErr("이메일과 비밀번호를 입력해주세요."); return; }
-      if (authMode === "register" && !nick) { showAuthErr("닉네임을 입력해주세요."); return; }
-      if (authMode === "register" && pw.length < 6) { showAuthErr("비밀번호는 6자 이상이어야 해요."); return; }
-
-      const btn = $("authSubmit");
-      btn.disabled = true; btn.textContent = "처리 중...";
-
-      try {
-        if (authMode === "register") {
-          const cred = await createUserWithEmailAndPassword(auth, email, pw);
-          await updateProfile(cred.user, { displayName: nick });
-          toast(`✅ 환영합니다, ${nick}님!`);
-        } else {
-          await signInWithEmailAndPassword(auth, email, pw);
-          toast("✅ 로그인 되었습니다");
-        }
-        $("authOverlay").style.display = "none";
-      } catch (e) {
-        showAuthErr(errMsg(e.code));
-      } finally {
-        btn.disabled = false;
-        btn.textContent = authMode === "login" ? "로그인" : "가입하기";
-      }
-    });
-
-    function showAuthErr(msg) { $("authError").textContent = msg; $("authError").style.display = "block"; }
-
-    function errMsg(code) {
-      return ({
-        "auth/email-already-in-use": "이미 사용 중인 이메일이에요.",
-        "auth/invalid-email": "이메일 형식이 올바르지 않아요.",
-        "auth/weak-password": "비밀번호는 6자 이상이어야 해요.",
-        "auth/user-not-found": "존재하지 않는 계정이에요.",
-        "auth/wrong-password": "비밀번호가 틀렸어요.",
-        "auth/invalid-credential": "이메일 또는 비밀번호가 올바르지 않아요.",
-        "auth/too-many-requests": "잠시 후 다시 시도해주세요.",
-      })[code] || "오류가 발생했어요. 다시 시도해주세요.";
-    }
-
-    $("btnLogout").addEventListener("click", async () => {
-      await signOut(auth);
-      toast("로그아웃 되었습니다");
-    });
-
-    /* ══════════ 글 작성 ══════════ */
-    $("btnSubmit").addEventListener("click", async () => {
-      const title = $("formTitle").value.trim();
-      const content = $("formContent").value.trim();
-      if (!title) { toast("제목을 입력해주세요"); $("formTitle").focus(); return; }
-      if (!content) { toast("내용을 입력해주세요"); $("formContent").focus(); return; }
-
-      let nickname, pwHash, uid;
-
-      if (currentUser) {
-        nickname = currentUser.displayName || currentUser.email;
-        pwHash = null;
-        uid = currentUser.uid;
-      } else {
-        const nick = $("formNick").value.trim();
-        const pw = $("formPw").value.trim();
-        if (!nick) { toast("닉네임을 입력해주세요"); $("formNick").focus(); return; }
-        if (!pw) { toast("삭제용 비밀번호를 입력해주세요"); $("formPw").focus(); return; }
-        nickname = nick;
-        pwHash = await sha256(pw);
-        uid = null;
-      }
-
-      const btn = $("btnSubmit");
-      btn.disabled = true; btn.textContent = "등록 중...";
-
-      try {
-        await push(ref(db, "posts"), { nickname, title, content, pwHash, uid, createdAt: new Date().toISOString() });
-        $("formNick").value = $("formPw").value = $("formTitle").value = $("formContent").value = "";
-        toast("✅ 게시글이 등록되었습니다");
-        await loadPosts();
-      } catch (e) {
-        toast("❌ 등록 실패: " + e.message);
-      } finally {
-        btn.disabled = false; btn.textContent = "✏️ 게시글 올리기";
-      }
-    });
-
-    $("formContent").addEventListener("keydown", e => { if (e.ctrlKey && e.key === "Enter") $("btnSubmit").click(); });
-
-    /* ══════════ 목록 로드 ══════════ */
-    async function loadPosts() {
-      $("postList").innerHTML = `<div class="loading"><div class="spinner"></div><br/>불러오는 중...</div>`;
-      try {
-        const snap = await get(ref(db, "posts"));
-        const data = snap.val();
-        if (!data) {
-          $("postList").innerHTML = `<div class="empty"><div class="icon">📭</div><p>아직 게시글이 없어요. 첫 글을 남겨보세요!</p></div>`;
-          $("postCount").textContent = "0 posts";
-          return;
-        }
-        const posts = Object.entries(data)
-          .map(([key, val]) => ({ key, ...val }))
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-        $("postCount").textContent = `${posts.length} posts`;
-        $("postList").innerHTML = "";
-
-        posts.forEach(post => {
-          const card = document.createElement("div");
-          card.className = "post-card";
-          const badgeHtml = post.uid
-            ? `<span class="badge badge-member">회원</span>`
-            : `<span class="badge badge-anon">익명</span>`;
-          card.innerHTML = `
+      card.innerHTML=`
         <div class="post-title-text"></div>
-        <div class="post-date"></div>
-        <div class="post-meta-row"><span class="nick"></span>${badgeHtml}</div>
+        ${thumbHtml}
+        <div class="post-meta-row"><span class="nick"></span>${badgeHtml}${imgBadge}<span class="post-date"></span></div>
+        ${isAdmin()?`<button class="admin-del-btn" title="관리자 삭제">🗑️ 삭제</button>`:""}
       `;
-          card.querySelector(".post-title-text").textContent = post.title;
-          card.querySelector(".post-date").textContent = fmtDate(post.createdAt);
-          card.querySelector(".nick").textContent = post.nickname;
-          card.addEventListener("click", () => openPostModal(post));
-          $("postList").appendChild(card);
+      card.querySelector(".post-title-text").textContent=post.title;
+      card.querySelector(".nick").textContent=post.nickname;
+      card.querySelector(".post-date").textContent=fmtDate(post.createdAt);
+
+      // 관리자 삭제 버튼
+      const adminDelBtn=card.querySelector(".admin-del-btn");
+      if (adminDelBtn) {
+        adminDelBtn.addEventListener("click", async e => {
+          e.stopPropagation();
+          if (!confirm(`"${post.title}" 을 삭제하시겠어요?`)) return;
+          try { await remove(ref(db,`posts/${post.key}`)); showToast("🗑️ 삭제되었습니다"); await loadPosts(); }
+          catch(e) { showToast("❌ 삭제 실패: "+e.message); }
         });
-      } catch (e) {
-        $("postList").innerHTML = `<div class="empty"><p>불러오기 실패: ${e.message}</p></div>`;
       }
-    }
 
-    /* ══════════ 게시글 모달 ══════════ */
-    function openPostModal(post) {
-      currentPost = post;
-      $("modalTitle").textContent = post.title;
-
-      const badgeHtml = post.uid
-        ? `<span class="badge badge-member">회원</span>`
-        : `<span class="badge badge-anon">익명</span>`;
-      $("modalMeta").innerHTML = `<span></span>${badgeHtml}<span></span>`;
-      $("modalMeta").querySelectorAll("span")[0].textContent = post.nickname;
-      $("modalMeta").querySelectorAll("span")[2].textContent = fmtDate(post.createdAt);
-
-      $("modalBody").textContent = post.content;
-      $("delSection").style.display = "none";
-      $("delPwInput").value = "";
-
-      // 삭제 버튼 노출 여부
-      const isMyPost = currentUser && currentUser.uid === post.uid;
-      const isAnonPost = !post.uid;
-      $("btnDel").style.display = (isMyPost || isAnonPost) ? "inline-block" : "none";
-      $("btnDel").dataset.direct = isMyPost ? "1" : "0";
-
-      $("postOverlay").style.display = "flex";
-      document.body.style.overflow = "hidden";
-    }
-
-    function closePostModal() {
-      $("postOverlay").style.display = "none";
-      document.body.style.overflow = "";
-      currentPost = null;
-    }
-
-    $("btnClosePost").addEventListener("click", closePostModal);
-    $("postOverlay").addEventListener("click", e => { if (e.target === $("postOverlay")) closePostModal(); });
-
-    $("btnDel").addEventListener("click", () => {
-      if ($("btnDel").dataset.direct === "1") {
-        // 로그인 본인 글 → 바로 삭제
-        if (confirm("정말 삭제하시겠어요?")) doDelete();
-      } else {
-        // 익명 글 → 비번 입력창 토글
-        const sec = $("delSection");
-        sec.style.display = sec.style.display === "flex" ? "none" : "flex";
-        if (sec.style.display === "flex") $("delPwInput").focus();
-      }
+      card.addEventListener("click", () => openPostModal(post));
+      $("postList").appendChild(card);
     });
+  } catch(e) { $("postList").innerHTML=`<div class="empty"><p>불러오기 실패: ${e.message}</p></div>`; }
+}
 
-    $("btnConfirmDel").addEventListener("click", async () => {
-      const input = $("delPwInput").value.trim();
-      if (!input) { toast("비밀번호를 입력해주세요"); return; }
-      const hash = await sha256(input);
-      if (hash !== currentPost.pwHash) { toast("❌ 비밀번호가 틀렸습니다"); return; }
-      doDelete();
+/* ══ 게시글 모달 ══ */
+function openPostModal(post) {
+  currentPost=post;
+  $("modalTitle").textContent=post.title;
+  const badgeHtml=post.uid?`<span class="badge badge-member">회원</span>`:`<span class="badge badge-anon">익명</span>`;
+  $("modalMeta").innerHTML=`<span class="n"></span>${badgeHtml}<span class="d"></span>`;
+  $("modalMeta").querySelector(".n").textContent=post.nickname;
+  $("modalMeta").querySelector(".d").textContent=fmtDate(post.createdAt);
+  $("modalBody").textContent=post.content;
+
+  // 갤러리
+  const gallery=$("modalGallery"); gallery.innerHTML="";
+  if (post.images?.length) {
+    gallery.className=`modal-gallery${post.images.length===1?" single":""}`;
+    post.images.forEach(url => {
+      const img=document.createElement("img"); img.src=url; img.alt="이미지";
+      img.addEventListener("click",()=>openLightbox(url)); gallery.appendChild(img);
     });
+  }
 
-    async function doDelete() {
-      try {
-        await remove(ref(db, `posts/${currentPost.key}`));
-        toast("🗑️ 삭제되었습니다");
-        closePostModal();
-        await loadPosts();
-      } catch (e) {
-        toast("❌ 삭제 실패: " + e.message);
-      }
-    }
+  $("delSection").style.display="none"; $("delPwInput").value="";
 
-    /* ── 초기 로드 ── */
-    loadPosts();
-  </script>
+  // 삭제 버튼: 본인 글 or 익명 글 or 관리자
+  const isMyPost=currentUser&&currentUser.uid===post.uid;
+  const isAnonPost=!post.uid;
+  const admin=isAdmin();
 
-  <!-- ══ 헤더 ══ -->
-  <header>
-    <div class="logo">Cozy<span>Board</span></div>
-    <div class="header-right">
-      <span id="userInfo" class="user-info"></span>
-      <button id="btnOpenLogin" class="btn-hdr">로그인</button>
-      <button id="btnOpenReg" class="btn-hdr accent">회원가입</button>
-      <button id="btnLogout" class="btn-hdr" style="display:none">로그아웃</button>
+  $("btnDel").style.display=(isMyPost||isAnonPost)?"inline-block":"none";
+  $("btnDel").dataset.direct=isMyPost?"1":"0";
+  $("btnAdminDel").style.display=admin?"inline-block":"none";
+
+  $("postOverlay").style.display="flex";
+  document.body.style.overflow="hidden";
+}
+
+function closePostModal() { $("postOverlay").style.display="none"; document.body.style.overflow=""; currentPost=null; }
+$("btnClosePost").addEventListener("click", closePostModal);
+$("postOverlay").addEventListener("click", e => { if(e.target===$("postOverlay")) closePostModal(); });
+
+$("btnDel").addEventListener("click", () => {
+  if ($("btnDel").dataset.direct==="1") { if(confirm("정말 삭제하시겠어요?")) doDelete(); }
+  else { const s=$("delSection"); s.style.display=s.style.display==="flex"?"none":"flex"; if(s.style.display==="flex") $("delPwInput").focus(); }
+});
+$("btnConfirmDel").addEventListener("click", async () => {
+  const input=$("delPwInput").value.trim();
+  if (!input) { showToast("비밀번호를 입력해주세요"); return; }
+  if (await sha256(input)!==currentPost.pwHash) { showToast("❌ 비밀번호가 틀렸습니다"); return; }
+  doDelete();
+});
+
+// 관리자 모달 삭제
+$("btnAdminDel").addEventListener("click", () => {
+  if (confirm(`"${currentPost.title}" 을 삭제하시겠어요?`)) doDelete();
+});
+
+async function doDelete() {
+  try { await remove(ref(db,`posts/${currentPost.key}`)); showToast("🗑️ 삭제되었습니다"); closePostModal(); await loadPosts(); }
+  catch(e) { showToast("❌ 삭제 실패: "+e.message); }
+}
+
+function openLightbox(url) {
+  const lb=document.createElement("div"); lb.className="lightbox";
+  lb.innerHTML=`<img src="${url}" alt="확대"/>`; lb.addEventListener("click",()=>lb.remove()); document.body.appendChild(lb);
+}
+</script>
+
+<!-- ══ 헤더 ══ -->
+<header>
+  <div class="logo">Cozy<span>Board</span><span id="logoCrown" class="admin-crown" style="display:none">👑</span></div>
+  <div class="header-right">
+    <span id="userInfo" class="user-info"></span>
+    <button id="btnOpenLogin" class="btn-hdr">로그인</button>
+    <button id="btnOpenReg"   class="btn-hdr accent">회원가입</button>
+    <button id="btnLogout"    class="btn-hdr" style="display:none">로그아웃</button>
+  </div>
+</header>
+
+<!-- ══ 관리자 배너 ══ -->
+<div id="adminBanner" class="admin-banner">
+  <div class="admin-banner-dot"></div>
+  관리자 모드 활성화 — 모든 게시글을 삭제할 수 있습니다
+</div>
+
+<!-- ══ 인증 모달 ══ -->
+<div id="authOverlay" class="overlay" style="display:none">
+  <div class="auth-box">
+    <button id="authClose" class="auth-close">✕</button>
+    <h2 id="authTitle">로그인</h2>
+    <div id="authError" class="auth-error"></div>
+    <div id="authNickRow" class="auth-field" style="display:none">
+      <label>닉네임</label>
+      <input id="authNick" type="text" placeholder="사용할 닉네임 (최대 20자)" maxlength="20" />
     </div>
-  </header>
-
-  <!-- ══ 인증 모달 ══ -->
-  <div id="authOverlay" class="overlay" style="display:none">
-    <div class="auth-box">
-      <button id="authClose" class="auth-close">✕</button>
-      <h2 id="authTitle">로그인</h2>
-      <div id="authError" class="auth-error"></div>
-      <div id="authNickRow" class="auth-field" style="display:none">
-        <label>닉네임</label>
-        <input id="authNick" type="text" placeholder="사용할 닉네임 (최대 20자)" maxlength="20" />
-      </div>
-      <div class="auth-field">
-        <label>이메일</label>
-        <input id="authEmail" type="email" placeholder="example@email.com" />
-      </div>
-      <div class="auth-field">
-        <label>비밀번호</label>
-        <input id="authPw" type="password" placeholder="6자 이상" />
-      </div>
-      <button id="authSubmit" class="auth-submit">로그인</button>
-      <div class="auth-switch">
-        <span id="authSwitchTxt">계정이 없으신가요?</span>
-        <button id="authSwitchBtn">회원가입하기</button>
-      </div>
+    <div class="auth-field">
+      <label>이메일</label>
+      <input id="authEmail" type="email" placeholder="example@email.com" />
+    </div>
+    <div class="auth-field">
+      <label>비밀번호</label>
+      <input id="authPw" type="password" placeholder="6자 이상" />
+    </div>
+    <button id="authSubmit" class="auth-submit">로그인</button>
+    <div class="auth-switch">
+      <span id="authSwitchTxt">계정이 없으신가요?</span>
+      <button id="authSwitchBtn">회원가입하기</button>
     </div>
   </div>
+</div>
 
-  <!-- ══ 메인 ══ -->
-  <main class="container">
-
-    <div class="write-box">
-      <h2>새 글 쓰기</h2>
-      <!-- 익명일 때만 표시 -->
-      <div id="anonFields" class="row2">
-        <input id="formNick" type="text" placeholder="닉네임 (익명)" maxlength="20" />
-        <input id="formPw" type="password" placeholder="삭제용 비밀번호" maxlength="30" />
-      </div>
-      <div class="field-row">
-        <input id="formTitle" type="text" placeholder="제목" maxlength="80" />
-      </div>
-      <div class="field-row">
-        <textarea id="formContent" placeholder="내용을 입력하세요 (Ctrl+Enter 로 등록)" maxlength="2000"></textarea>
-      </div>
-      <div class="write-footer">
-        <button id="btnSubmit" class="btn-submit">✏️ 게시글 올리기</button>
-        <span id="writeHint" class="write-hint">로그인하거나 익명으로 작성하세요</span>
-      </div>
+<!-- ══ 메인 ══ -->
+<main class="container">
+  <div class="write-box">
+    <h2>새 글 쓰기</h2>
+    <div id="anonFields" class="row2">
+      <input id="formNick" type="text" placeholder="닉네임 (익명)" maxlength="20" />
+      <input id="formPw"   type="password" placeholder="삭제용 비밀번호" maxlength="30" />
     </div>
-
-    <div class="list-header">
-      <div class="list-title">전체 글</div>
-      <div id="postCount" class="post-count">loading...</div>
+    <div class="field-row">
+      <input id="formTitle" type="text" placeholder="제목" maxlength="80" />
     </div>
-    <div id="postList" class="post-list"></div>
-
-  </main>
-
-  <!-- ══ 게시글 모달 ══ -->
-  <div id="postOverlay" class="overlay" style="display:none">
-    <div class="post-modal">
-      <div class="modal-header">
-        <div id="modalTitle" class="modal-title"></div>
-        <div id="modalMeta" class="modal-meta"></div>
-      </div>
-      <div id="modalBody" class="modal-body"></div>
-      <div class="modal-footer">
-        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
-          <button id="btnDel" class="btn-del" style="display:none">삭제</button>
-          <div id="delSection" class="del-confirm" style="display:none">
-            <input id="delPwInput" type="password" placeholder="삭제용 비밀번호" />
-            <button id="btnConfirmDel" class="btn-confirm">확인</button>
+    <div class="field-row">
+      <textarea id="formContent" placeholder="내용을 입력하세요 (Ctrl+Enter 로 등록)" maxlength="2000"></textarea>
+    </div>
+    <div class="field-row">
+      <span class="field-label">🖼️ 이미지 첨부 (URL, 최대 4장)</span>
+      <div class="img-input-wrap">
+        <div id="imgPreviewStrip" class="img-preview-strip"></div>
+        <div id="imgUrlPopup" class="img-url-popup">
+          <div class="img-url-row">
+            <input id="imgUrlInput" type="url" placeholder="이미지 URL을 붙여넣으세요" />
+            <button id="imgUrlOk" class="img-url-ok">추가</button>
           </div>
+          <div class="img-url-hint">예: https://i.imgur.com/abc.jpg</div>
         </div>
-        <button id="btnClosePost" class="btn-close">닫기</button>
       </div>
+    </div>
+    <div class="write-footer">
+      <button id="btnSubmit" class="btn-submit">✏️ 게시글 올리기</button>
+      <span id="writeHint" class="write-hint">로그인하거나 익명으로 작성하세요</span>
     </div>
   </div>
 
-  <div id="toast" class="toast"></div>
+  <div class="list-header">
+    <div class="list-title">전체 글</div>
+    <div id="postCount" class="post-count">loading...</div>
+  </div>
+  <div id="postList" class="post-list"></div>
+</main>
 
-  <footer>CozyBoard CopyRigth By © kazinobel</footer>
+<!-- ══ 게시글 모달 ══ -->
+<div id="postOverlay" class="overlay" style="display:none">
+  <div class="post-modal">
+    <div class="modal-header">
+      <div id="modalTitle" class="modal-title"></div>
+      <div id="modalMeta"  class="modal-meta"></div>
+    </div>
+    <div id="modalBody" class="modal-body"></div>
+    <div id="modalGallery" class="modal-gallery"></div>
+    <div class="modal-footer">
+      <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+        <button id="btnAdminDel" class="btn-admin-del" style="display:none">👑 관리자 삭제</button>
+        <button id="btnDel"      class="btn-del"       style="display:none">삭제</button>
+        <div id="delSection" class="del-confirm" style="display:none">
+          <input id="delPwInput" type="password" placeholder="삭제용 비밀번호" />
+          <button id="btnConfirmDel" class="btn-confirm">확인</button>
+        </div>
+      </div>
+      <button id="btnClosePost" class="btn-close">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<footer>CozyBoard CopyRigth By © kazinobel</footer>
 </body>
-
 </html>
